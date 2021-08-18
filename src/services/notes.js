@@ -1,23 +1,37 @@
 import axios from 'axios'
 const baseUrl = '/api/notes'
 
-const getAll = () => {
+let token = null
+
+const setToken = newToken => {
+  token = `bearer ${newToken}`
+}
+
+const getAll = async () => {
   const request = axios.get(baseUrl)
-  return request.then(response => response.data)
+  const response = await request
+  return response.data
 }
 
-const create = newObject => {
-  const request = axios.post(baseUrl, newObject)
-  return request.then(response => response.data)
+const create = async newObject => {
+  const config = {
+    headers: { Authorization: token }
+  }
+
+  const res = await axios.post(baseUrl, newObject, config)
+  console.log('res :>> ', res)
+  console.log('res.data :>> ', res.data)
+  return res.data
 }
 
-const update = (id, newObject) => {
+const update = async (id, newObject) => {
   const request = axios.put(`${baseUrl}/${id}`, newObject)
-  return request.then(response => response.data)
+  const response = await request
+  return response.data
 }
 
 const noteService = { 
-  getAll, create, update
+  getAll, create, update, setToken
 }
 
 export default noteService

@@ -62,7 +62,8 @@ const App = () => {
 
     try {
       const res = await axios.post('/api/login', { username, password })
-      setUser(res)
+      setUser(res.data)
+      noteService.setToken(res.data.token)
       setUsername('')
       setPassword('')
     } catch (err) {
@@ -77,6 +78,8 @@ const App = () => {
   ? notes
   : notes.filter(note => note.important)
 
+
+  //refactor forms separate
   const loginForm = () => (
     <form onSubmit={handleLogin}>
         <div>
@@ -117,8 +120,13 @@ const App = () => {
       <h1>Notes</h1>
       <Notification message={errorMessage} />
       
-      {user === null && loginForm()}
-      {user !== null && noteForm()}
+      {user === null ?
+        loginForm() :
+        <div>
+          <p>{user.username} logged-in</p>
+          {noteForm()}
+        </div>
+      }
 
       <div>
         <button onClick={() => setShowAll(!showAll)}>
