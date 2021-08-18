@@ -24,7 +24,6 @@ const App = () => {
 
   useEffect(() => {
     const jsonLoggedInUser = window.localStorage.getItem('loggedInUser')
-    //add logout
     if (jsonLoggedInUser) {
       const user = JSON.parse(jsonLoggedInUser)
       setUser(user)
@@ -85,6 +84,12 @@ const App = () => {
     }
   }
 
+  const handleLogout = () => {
+    window.localStorage.removeItem('loggedInUser')
+    setUser(null)
+    noteService.setToken(null)
+  }
+
   const notesToShow = showAll
   ? notes
   : notes.filter(note => note.important)
@@ -117,13 +122,16 @@ const App = () => {
   )
 
   const noteForm = () => (
-    <form onSubmit={addNote}>
-        <input
-          value={newNote}
-          onChange={({ target }) => setNewNote(target.value)}
-        />
-        <button type="submit">save</button>
+    <div>
+      <button onClick={handleLogout}>logout</button>
+      <form onSubmit={addNote}>
+          <input
+            value={newNote}
+            onChange={({ target }) => setNewNote(target.value)}
+          />
+          <button type="submit">save</button>
       </form>
+    </div>
   )
 
   return (
