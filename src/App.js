@@ -22,6 +22,16 @@ const App = () => {
     })
   }, [])
 
+  useEffect(() => {
+    const jsonLoggedInUser = window.localStorage.getItem('loggedInUser')
+    //add logout
+    if (jsonLoggedInUser) {
+      const user = JSON.parse(jsonLoggedInUser)
+      setUser(user)
+      noteService.setToken(user.token)
+    }
+  }, [])
+
   const addNote = (event) => {
     event.preventDefault()
     const noteObject = {
@@ -62,6 +72,7 @@ const App = () => {
 
     try {
       const res = await axios.post('/api/login', { username, password })
+      window.localStorage.setItem('loggedInUser', JSON.stringify(res.data))
       setUser(res.data)
       noteService.setToken(res.data.token)
       setUsername('')
