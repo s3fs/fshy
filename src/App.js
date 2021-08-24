@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import LoginForm from './components/login'
 import Note from './components/Note'
 import Notification from './components/Notification'
 import Footer from './components/Footer'
@@ -13,6 +14,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [loginVisible, setLoginVisible] = useState(false)
 
   useEffect(() => {
     noteService
@@ -94,33 +96,6 @@ const App = () => {
   ? notes
   : notes.filter(note => note.important)
 
-
-  //refactor forms separate
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-        <div>
-          username 
-          <input
-            type='text'
-            name='Username'
-            alt='poopie'
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          passsword 
-          <input
-            type='text'
-            name='Password'
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type='submit'>Login</button>
-      </form>
-  )
-
   const noteForm = () => (
     <div>
       <button onClick={handleLogout}>logout</button>
@@ -134,13 +109,36 @@ const App = () => {
     </div>
   )
 
+  const loginForm = () => {
+    const hideIfVisible = { display: loginVisible ? 'none' : '' }
+    const showIfVisible = { display: loginVisible ? '' : 'none' }
+
+    return (
+      <div>
+        <div style={hideIfVisible}>
+          <button onClick={() => setLoginVisible(true)}>Log in</button>
+        </div>
+        <div style={showIfVisible}>
+          <LoginForm 
+            username={username}
+            password={password}
+            handleUsernameChange={({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
+            handleSubmit={handleLogin}
+          />
+          <button onClick={() => setLoginVisible(false)}>Cancel login</button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       <h1>Notes</h1>
       <Notification message={errorMessage} />
       
       {user === null ?
-        loginForm() :
+        <div>{loginForm()}</div> :
         <div>
           <p>{user.username} logged-in</p>
           {noteForm()}
@@ -149,7 +147,7 @@ const App = () => {
 
       <div>
         <button onClick={() => setShowAll(!showAll)}>
-          show {showAll ? 'important' : 'all' }
+          Show {showAll ? 'important notes only' : 'all notes' }
         </button>
       </div>   
       <ul>
