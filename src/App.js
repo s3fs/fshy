@@ -19,7 +19,7 @@ const App = () => {
       const res = await getAll()
       setNotes(res)
     })()
-    }, [])
+  }, [])
 
   useEffect(() => {
     const jsonLoggedInUser = window.localStorage.getItem('loggedInUser')
@@ -39,7 +39,7 @@ const App = () => {
   const toggleImportanceOf = async (id) => {
     const note = notes.find(n => n.id === id)
     const changedNote = { ...note, important: !note.important }
-  
+
     try {
       const res = await update(id, changedNote)
       setNotes(notes.map(note => note.id !== id ? note : res))
@@ -74,8 +74,8 @@ const App = () => {
   }
 
   const notesToShow = showAll
-  ? notes
-  : notes.filter(note => note.important)
+    ? notes
+    : notes.filter(note => note.important)
 
   const noteFormRef = useRef()
 
@@ -84,13 +84,13 @@ const App = () => {
       <NoteForm
         createNote={addNote}
       />
-      </Togglable>
+    </Togglable>
   )
 
   const loginForm = () => (
     //refactor it the same way as noteform + ! warn msg note len !
     <Togglable buttonLabel='Log in'>
-      <LoginForm 
+      <LoginForm
         handleLogin={handleLogin}
       />
     </Togglable>
@@ -100,7 +100,7 @@ const App = () => {
     <div>
       <h1>Notes</h1>
       <Notification message={errorMessage} />
-      
+
       {user === null ?
         <div>{loginForm()}</div> :
         <div>
@@ -109,22 +109,20 @@ const App = () => {
         </div>
       }
 
-      
-
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           Show {showAll ? 'important notes only' : 'all notes' }
         </button>
-      </div>   
+      </div>
       <ul>
-        {notesToShow.map(note => 
-            <Note
-              key={note.id}
-              note={note} 
-              toggleImportance={() => toggleImportanceOf(note.id)}
-            />
+        {notesToShow.map(note =>
+          <Note
+            key={note.id}
+            note={note}
+            toggleImportance={() => toggleImportanceOf(note.id)}
+          />
         )}
-      </ul>  
+      </ul>
       <Footer />
     </div>
   )
