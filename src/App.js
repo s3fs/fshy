@@ -5,7 +5,7 @@ import NoteForm from './components/NoteForm'
 import Note from './components/Note'
 import Notification from './components/Notification'
 import Footer from './components/Footer'
-import noteService from './services/notes'
+import { getAll, create, update, setToken } from './services/notes'
 import axios from 'axios'
 
 const App = () => {
@@ -18,23 +18,22 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    noteService
-      .getAll()
-      .then(initialNotes => {
-      setNotes(initialNotes)
-    })
-  }, [])
+    (async () => {
+      const res = await getAll()
+      setNotes(res)
+    })()
+    }, [])
 
   useEffect(() => {
     const jsonLoggedInUser = window.localStorage.getItem('loggedInUser')
     if (jsonLoggedInUser) {
       const user = JSON.parse(jsonLoggedInUser)
       setUser(user)
-      noteService.setToken(user.token)
+      setToken(user.token)
     }
   }, [])
 
-  const addNote = (event) => {
+  const addNote = async (event) => {
     event.preventDefault()
     const noteObject = {
       content: newNote,
@@ -42,31 +41,26 @@ const App = () => {
       important: Math.random() > 0.5,
     }
 
-    noteService
-      .create(noteObject)
-        .then(returnedNote => {
-        setNotes(notes.concat(returnedNote))
-        setNewNote('')
-      })
+    const res = await create(noteObject)
+    setNotes(notes.concat(res))
+    setNewNote('')
   }
 
-  const toggleImportanceOf = id => {
+  const toggleImportanceOf = async (id) => {
     const note = notes.find(n => n.id === id)
     const changedNote = { ...note, important: !note.important }
   
-    noteService
-    .update(id, changedNote)
-      .then(returnedNote => {
-      setNotes(notes.map(note => note.id !== id ? note : returnedNote))
-    })
-    .catch(error => {
+    try {
+      const res = await update(id, changedNote)
+      setNotes(notes.map(note => note.id !== id ? note : res))
+    } catch (err) {
       setErrorMessage(
         `Note '${note.content}' was already removed from server`
       )
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
-    })    
+    }
   }
 
   const handleLogin = async (ev) => {
@@ -76,11 +70,13 @@ const App = () => {
       const res = await axios.post('/api/login', { username, password })
       window.localStorage.setItem('loggedInUser', JSON.stringify(res.data))
       setUser(res.data)
-      noteService.setToken(res.data.token)
+      setToken(res.data.token)
       setUsername('')
       setPassword('')
     } catch (err) {
       setErrorMessage('Wrong credentials')
+      setUsername('')
+      setPassword('')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -90,7 +86,7 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem('loggedInUser')
     setUser(null)
-    noteService.setToken(null)
+    setToken(null)
   }
 
   const notesToShow = showAll

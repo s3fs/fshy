@@ -28,8 +28,4 @@ const update = async (id, newObject) => {
   return response.data
 }
 
-const noteService = { 
-  getAll, create, update, setToken
-}
-
-export default noteService
+export { getAll, create, update, setToken }
