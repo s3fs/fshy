@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import NoteForm from './components/NoteForm'
@@ -33,6 +33,7 @@ const App = () => {
   const addNote = async (noteObject) => {
     const res = await create(noteObject)
     setNotes(notes.concat(res))
+    noteFormRef.current.toggleVisibility()
   }
 
   const toggleImportanceOf = async (id) => {
@@ -76,8 +77,10 @@ const App = () => {
   ? notes
   : notes.filter(note => note.important)
 
+  const noteFormRef = useRef()
+
   const noteForm = () => (
-    <Togglable buttonLabel='New note'>
+    <Togglable buttonLabel='New note' ref={noteFormRef}>
       <NoteForm
         createNote={addNote}
       />
