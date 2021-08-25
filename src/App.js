@@ -10,11 +10,8 @@ import axios from 'axios'
 
 const App = () => {
   const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(false)
   const [errorMessage, setErrorMessage] = useState(null)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   useEffect(() => {
@@ -33,17 +30,9 @@ const App = () => {
     }
   }, [])
 
-  const addNote = async (event) => {
-    event.preventDefault()
-    const noteObject = {
-      content: newNote,
-      date: new Date().toISOString(),
-      important: Math.random() > 0.5,
-    }
-
+  const addNote = async (noteObject) => {
     const res = await create(noteObject)
     setNotes(notes.concat(res))
-    setNewNote('')
   }
 
   const toggleImportanceOf = async (id) => {
@@ -63,20 +52,14 @@ const App = () => {
     }
   }
 
-  const handleLogin = async (ev) => {
-    ev.preventDefault()
-
+  const handleLogin = async (username, password) => {
     try {
       const res = await axios.post('/api/login', { username, password })
       window.localStorage.setItem('loggedInUser', JSON.stringify(res.data))
       setUser(res.data)
       setToken(res.data.token)
-      setUsername('')
-      setPassword('')
     } catch (err) {
       setErrorMessage('Wrong credentials')
-      setUsername('')
-      setPassword('')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -96,22 +79,16 @@ const App = () => {
   const noteForm = () => (
     <Togglable buttonLabel='New note'>
       <NoteForm
-        onSubmit={addNote}
-        value={newNote}
-        handleChange={({ target }) => setNewNote(target.value)}
-        handleLogout={handleLogout}
+        createNote={addNote}
       />
       </Togglable>
   )
 
   const loginForm = () => (
+    //refactor it the same way as noteform + ! warn msg note len !
     <Togglable buttonLabel='Log in'>
       <LoginForm 
-        handleSubmit={handleLogin}
-        handlePasswordChange={({ target }) => setPassword(target.value)}
-        handleUsernameChange={({ target }) => setUsername(target.value)}
-        username={username}
-        password={password}
+        handleLogin={handleLogin}
       />
     </Togglable>
   )
