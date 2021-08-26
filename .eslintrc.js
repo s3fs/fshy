@@ -19,6 +19,7 @@ module.exports = {
         "react", "jest"
     ],
     "rules": {
+        "react/react-in-jsx-scope": "off",
         "indent": [
             "error",
             2  
@@ -36,7 +37,6 @@ module.exports = {
             "never"
         ],
         "eqeqeq": "error",
-        "no-trailing-spaces": "error",
         "object-curly-spacing": [
             "error", "always"
         ],
