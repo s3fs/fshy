@@ -32,7 +32,7 @@ describe('<Togglable />', () => {
   })
 
   test('content can b hidden', () => {
-    //tests render from scratch! have to show el first
+    //tests here render from scratch (beforeEach)! have to show el first
     const showButton = component.container.querySelector('button')
     fireEvent.click(showButton)
 
