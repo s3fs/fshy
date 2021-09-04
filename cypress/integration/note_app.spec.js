@@ -1,6 +1,15 @@
 /* eslint-disable no-undef */
 describe('Note app tests', () => {
   beforeEach(() => {
+    cy.request('POST', 'http://localhost:3001/api/testing/reset')
+
+    const user = {
+      name: 'hakim',
+      username: 'hakim',
+      password: 'salainen'
+    }
+
+    cy.request('POST', 'http://localhost:3001/api/users', user)
     cy.visit('http://localhost:3000')
   })
 
@@ -32,8 +41,27 @@ describe('Note app tests', () => {
     it('creating new note', () => {
       cy.contains(/new note/i).click()
       cy.get('input').type('a note created by cypress')
-      cy.contains(/save/i).click()
+      cy.contains(/save note/i).click()
+      cy.contains(/show all notes/i).click()
       cy.contains('a note created by cypress')
+    })
+
+    describe('a note exists', () => {
+      beforeEach(() => {
+        cy.contains(/new note/i).click()
+          .get('input').type('anotha note')
+
+        cy.contains(/save note/i).click()
+        cy.contains(/show all notes/i).click()
+      })
+
+      it('note imp toggle', () => {
+        cy.contains('anotha note')
+          .contains('make important').click()
+
+        cy.contains('anotha note')
+          .contains('make not important')
+      })
     })
   })
 })

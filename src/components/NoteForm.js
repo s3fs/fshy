@@ -8,7 +8,7 @@ const NoteForm = ({ createNote }) => {
     createNote({
       content: newNote,
       date: new Date().toISOString(),
-      important: Math.random() > 0.5
+      important: false
     })
 
     setNewNote('')
