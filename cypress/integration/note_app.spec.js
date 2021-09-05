@@ -58,18 +58,17 @@ describe('Note app tests', () => {
 
     describe('a note exists', () => {
       beforeEach(() => {
-        cy.newNote({
-          content: 'anotha note',
-          important: false
-        })
+        cy.newNote({ content: '1st note', important: false })
+        cy.newNote({ content: '2nd note', important: false })
+        cy.newNote({ content: '3rd note', important: false })
       })
 
       it('note imp toggle', () => {
-        cy.contains('anotha note')
-          .contains('make important').click()
-
-        cy.contains('anotha note')
-          .contains('make not important')
+        //chaining looks for content within chained element
+        //using find bc get would search the whole page
+        cy.contains('2nd note').parent().find('button').as('theButton')
+        cy.get('@theButton').click()
+        cy.get('@theButton').should('contain', 'make not important')
       })
     })
   })
