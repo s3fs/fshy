@@ -10,7 +10,7 @@ import axios from 'axios'
 
 const App = () => {
   const [notes, setNotes] = useState([])
-  const [showAll, setShowAll] = useState(false)
+  const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
   const [user, setUser] = useState(null)
 
@@ -56,6 +56,7 @@ const App = () => {
   const handleLogin = async (username, password) => {
     try {
       const res = await axios.post('/api/login', { username, password })
+      console.log('res :>> ', res)
       window.localStorage.setItem('loggedInUser', JSON.stringify(res.data))
       setUser(res.data)
       setToken(res.data.token)

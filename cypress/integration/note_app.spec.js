@@ -13,6 +13,20 @@ describe('Note app tests', () => {
     cy.visit('http://localhost:3000')
   })
 
+  it('wrong cred login fail', () => {
+    cy.contains(/log in/i).click()
+    cy.get('#username').type('hakim')
+    cy.get('#password').type('hahapasswooord')
+    cy.get('#login_button').click()
+    cy.get('.error').contains(/wrong credentials/i) //should('contain', 'wrong credentials')
+
+    cy.get('.error')
+      .should('have.css', 'color', 'rgb(255, 0, 0)')
+      .and('have.css', 'border-style', 'solid')
+
+    cy.get('html').should('not.contain', 'hakim logged in')
+  })
+
   it('open frommnt page', () => {
     cy.contains('Notes')
     cy.contains('Note app, Department of Computer Science, University of Helsinki 2021')
@@ -30,29 +44,24 @@ describe('Note app tests', () => {
     cy.contains('hakim logged-in')
   })
   
-  describe('logged in', () => {
+  describe.only('logged in', () => {
     beforeEach(() => {
-      cy.contains('Log in').click()
-      cy.get('#username').type('hakim')
-      cy.get('#password').type('salainen')
-      cy.get('#login_button').click()
+      cy.login({ username: 'hakim', password: 'salainen' })
     })
 
     it('creating new note', () => {
       cy.contains(/new note/i).click()
       cy.get('input').type('a note created by cypress')
       cy.contains(/save note/i).click()
-      cy.contains(/show all notes/i).click()
       cy.contains('a note created by cypress')
     })
 
     describe('a note exists', () => {
       beforeEach(() => {
-        cy.contains(/new note/i).click()
-          .get('input').type('anotha note')
-
-        cy.contains(/save note/i).click()
-        cy.contains(/show all notes/i).click()
+        cy.newNote({
+          content: 'anotha note',
+          important: false
+        })
       })
 
       it('note imp toggle', () => {
