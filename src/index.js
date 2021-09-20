@@ -3,7 +3,7 @@ import React from 'react-dom'
 import ReactDOM from 'react-dom'
 import {
   BrowserRouter as Router,
-  Switch, Route, Link, Redirect, useParams, useHistory
+  Switch, Route, Link, Redirect, useHistory, useRouteMatch
 } from 'react-router-dom'
 
 const Home = () => {
@@ -19,10 +19,7 @@ const Home = () => {
   )
 }
 
-const Note = ({ notes }) => {
-  const id = useParams().id //https://reactrouter.com/web/api/Hooks/useparams
-  const note = notes.find(n => n.id === Number(id))
-
+const Note = ({ note }) => {
   return (
     <div>
       <h2>{note.content}</h2>
@@ -113,6 +110,13 @@ const App = () => {
 
   const login = (user) => setUser(user)
 
+  //executed every render || url change
+  const match = useRouteMatch('/notes/:id')
+  //if match => object.contains(parametrized path part(id))
+  const note = match 
+    ? notes.find(n => n.id === Number(match.params.id))
+    : null
+
   const padding = {
     padding: 5
   }
@@ -131,7 +135,7 @@ const App = () => {
         </div>
         <Switch>
           <Route path='/notes/:id'>
-            <Note notes={notes} />
+            <Note note={note} />
           </Route>
           <Route path='/notes'>
             <Notes notes={notes} />
@@ -156,4 +160,11 @@ const App = () => {
   )
 }
 
-ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(
+  //moving Touter components outside to make useRouteMatch usage possible
+  //(cant be used in a component defining routing part)
+  <Router>
+    <App />
+  </Router>, 
+  document.getElementById('root')
+)
